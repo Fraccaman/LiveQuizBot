@@ -1,4 +1,3 @@
-# 23.05.2019 -- 3365
 import argparse
 import json
 import os
@@ -69,7 +68,7 @@ if __name__ == '__main__':
                     pool.close()
                     pool.join()
         elif args.test:
-            for index, file in enumerate(files('test')):
+            for index, file in enumerate(files('testing')):
                 if file.split('.')[1] == 'jpg' or file.split('.')[1] == 'png':
                     do_question(pool, file, debug=False)
                     key = input()

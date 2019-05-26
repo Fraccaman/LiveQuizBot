@@ -13,6 +13,7 @@ class SolverType(Enum):
     COORD = 30
     INSTAGRAM = 40
     SINGLE_NER = 50
+    PRIMA = 60
     DEFAULT = 0
 
 
@@ -59,12 +60,16 @@ class Instance:
         solver = SolverType.SINGLE_NER if question_lower.count("\"") == 2 and len(self.ner_question) == 1 and \
                                           self.ner_question[0][0].lower() not in question_lower.split('"')[
                                               1] and self.ner_question[0][1]  != 'MISC' else solver
+        solver = SolverType.PRIMA if 'chi' not in question_lower and 'prima' in question_lower else solver
+
+        if solver == SolverType.PRIMA:
+            self.is_negative = True
 
         # print(self.ner_first_answer, self.is_first_complete_ner)
         # print(self.ner_second_answer, self.is_second_complete_ner)
         # print(self.ner_third_answer, self.is_third_complete_ner)
 
-        # print(solver)
+        print(solver)
 
         self.solver = solver
 
