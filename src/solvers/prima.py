@@ -30,7 +30,7 @@ class Prima(Solver):
             return int(d)
         except Exception:
             return 0
-            
+
     def select_points(self, dates: Dict):
         return {
             self.copy.first_answer: dates[0],
