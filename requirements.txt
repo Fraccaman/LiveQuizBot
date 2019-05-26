@@ -1,0 +1,9 @@
+image
+nltk
+requests
+unidecode
+bs4
+pytesseract
+num2words
+pillow
+spacy

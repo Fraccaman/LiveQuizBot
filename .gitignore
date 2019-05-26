@@ -237,3 +237,12 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/git,venv,python,pycharm
+
+.DS_Store
+dump.txt
+dump_patty.txt
+screenshot.png
+live_screens/**
+.idea/inspectionProfiles
+/.idea/LiveQuizBot.iml
+/.idea/misc.xml
