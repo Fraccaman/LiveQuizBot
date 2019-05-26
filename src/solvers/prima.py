@@ -26,8 +26,8 @@ class Prima(Solver):
         soup = BeautifulSoup(html, features="html.parser")
         try:
             date_str = soup.find('div', {'class': 'Z0LcW'}).text
-            d  = parse(date_str).timestamp()
-            return int(d)
+            d = parse(date_str)
+            return 10000 * d.year + 100 * d.month + d.day
         except Exception:
             return 0
 

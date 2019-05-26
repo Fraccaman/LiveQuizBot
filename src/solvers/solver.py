@@ -34,17 +34,17 @@ class Solver(ABC):
     def clean_impl(self, f: str):
         to_clean = self.copy.__dict__[f]
         if len(to_clean.split(' ')) == 1:
-            to_clean = to_clean.lower().replace('ii ', '')
+            to_clean = to_clean.lower().replace('ii ', 'il ')
             to_clean = to_clean.translate(str.maketrans('', '', string.punctuation))
             self.copy.__dict__[f] = unidecode(to_clean).strip()
         elif (f == 'first_answer' and self.copy.is_first_complete_ner) or (
                 f == 'second_answer' and self.copy.is_second_complete_ner) or (
                 f == 'third_answer' and self.copy.is_third_complete_ner):
-            to_clean = to_clean.lower().replace('ii ', '')
+            to_clean = to_clean.lower().replace('ii ', 'il ')
             to_clean = to_clean.translate(str.maketrans('', '', string.punctuation))
             self.copy.__dict__[f] = unidecode(to_clean).strip()
         else:
-            to_clean = to_clean.lower().replace('ii', 'il')
+            to_clean = to_clean.lower().replace('ii', 'il ')
             is_mandatory = re.search('"(.*)"', to_clean).group(1) if to_clean.count('\"') == 2 else ''
             word_tokenized_list = nltk.tokenize.word_tokenize(to_clean)
             word_tokenized_no_punct = [x.lower() for x in word_tokenized_list if x not in string.punctuation]

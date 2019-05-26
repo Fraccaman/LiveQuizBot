@@ -7,6 +7,7 @@ Use at your own risk.
 * Enable developer option and debug mode on your Andriod phone
 * Connect your phone to the pc (transfer mode)
 * Run ``install.sh``
+* Move ``src/data/ita.traineddata`` under tesseract ``tessdata`` folder
 * Run ``python3 bot.py --live``
 * Follow instructions on the screen
 
