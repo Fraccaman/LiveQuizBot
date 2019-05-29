@@ -1,3 +1,4 @@
+from copy import deepcopy
 from multiprocessing.pool import ThreadPool
 from typing import List, Tuple, Any
 
@@ -9,16 +10,16 @@ from src.instance import Instance
 from src.parallel_process import parallel_execution
 
 QUESTION_BOUNDARIES = lambda w, h: (35, 450, w - 35, h - 1170)
-FIRST_ANSWER_BOUNDARIES = lambda w, h, space: (35, 690 + space, w - 120, h - 1050 + space)
-SECOND_ANSWER_BOUNDARIES = lambda w, h, space: (35, 910 + space, w - 120, h - 830 + space)
-THIRD_ANSWER_BOUNDARIES = lambda w, h, space: (35, 1130 + space, w - 120, h - 610 + space)
+FIRST_ANSWER_BOUNDARIES = lambda w, h, space: (35, 610 + space, w - 120, h - 1130 + space)
+SECOND_ANSWER_BOUNDARIES = lambda w, h, space: (35, 820 + space, w - 120, h - 890 + space)
+THIRD_ANSWER_BOUNDARIES = lambda w, h, space: (35, 1020 + space, w - 120, h - 700 + space)
 SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.2 * w, h - 30)
 
 
 def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str, int]:
     question_image = img.crop(QUESTION_BOUNDARIES(w, h))
     if debug: question_image.show()
-    question_text = pytesseract.image_to_string(question_image, lang='ita').replace('ii ', 'il ').replace('lIl', 'Il ').strip()
+    question_text = pytesseract.image_to_string(question_image, lang='ita', config='--psm 11').replace('ii ', 'il ').replace('lIl', 'Il ').replace('|', 'I').split('?')[0].strip()
     n_of_lines = question_text.count('\n') + 1
     question_text = question_text.replace('\n', ' ')
     n_of_lines_space = (n_of_lines - 1) * 40 + (25 if n_of_lines == 3 else 0)
@@ -32,12 +33,12 @@ def answer_to_text(data: List[Any]) -> str:
     debug = data[2]
     answer_image = img.crop(boundaries)
     if debug: answer_image.show()
-    answer_text = pytesseract.image_to_string(answer_image, lang='ita').replace('\n', ' ').replace('ii ', 'il ').replace('lIl ', 'Il ').strip()
+    answer_text = pytesseract.image_to_string(answer_image, lang='ita').replace('\n', ' ').replace('ii ', 'il ').replace('lIl', 'Il ').replace('|', 'I').split('?')[0].strip()
     if answer_text == "":
         w, h = answer_image.size
         answer_image = answer_image.crop(SMALL_ANSWER_BOUNDARIES(w, h))
         if debug: answer_image.show()
-        answer_text = pytesseract.image_to_string(answer_image, lang='ita', config='--psm 6').replace('\n', ' ').replace('ii ', 'il ').replace('lIl ', 'il ')
+        answer_text = pytesseract.image_to_string(answer_image, lang='ita', config='--psm 6').replace('\n', ' ').replace('ii ', 'il ').replace('lIl', 'Il ').replace('|', 'I').split('?')[0].strip()
     return answer_text
 
 
@@ -67,6 +68,6 @@ def img_to_text(file_path: str, pool: ThreadPool, debug: bool) -> Instance:
     img = normalize_image(file_path)
 
     w, h = img.size
-    question_text, question_size = question_to_text(img, w, h, debug)
+    question_text, question_size = question_to_text(deepcopy(img), w, h, debug)
     answers_text = answers_to_text(img, w, h, question_size, pool, debug)
     return Instance.create_instance(question_text, answers_text[0], answers_text[1], answers_text[2])
