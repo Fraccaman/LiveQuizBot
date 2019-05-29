@@ -60,7 +60,7 @@ class Instance:
         solver = SolverType.SINGLE_NER if question_lower.count("\"") == 2 and len(self.ner_question) == 1 and \
                                           self.ner_question[0][0].lower() not in question_lower.split('"')[
                                               1] and self.ner_question[0][1]  != 'MISC' else solver
-        solver = SolverType.PRIMA if 'chi' not in question_lower and 'primo' in question_lower else solver
+        solver = SolverType.PRIMA if 'chi' not in question_lower and 'primo' in question_lower or 'prima ' in question_lower else solver
 
         if solver == SolverType.PRIMA:
             self.is_negative = True

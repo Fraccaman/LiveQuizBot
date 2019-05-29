@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 
@@ -15,14 +16,14 @@ class Coord(Solver):
 
     def craft_queries(self):
         if 'stat' in self.copy.question:
-            return [DOMAIN + self.copy.first_answer + ' coordinates',
-                    DOMAIN + self.copy.second_answer + ' coordinates',
-                    DOMAIN + self.copy.third_answer + ' coordinates'
+            return [DOMAIN + quote(self.copy.first_answer + ' coordinates'),
+                    DOMAIN + quote(self.copy.second_answer + ' coordinates'),
+                    DOMAIN + quote(self.copy.third_answer + ' coordinates')
                     ]
         else:
-            return [DOMAIN + self.copy.first_answer + ' city coordinates',
-                    DOMAIN + self.copy.second_answer + ' city coordinates',
-                    DOMAIN + self.copy.third_answer + ' city coordinates'
+            return [DOMAIN + quote(self.copy.first_answer + ' city coordinates'),
+                    DOMAIN + quote(self.copy.second_answer + ' city coordinates'),
+                    DOMAIN + quote(self.copy.third_answer + ' city coordinates')
                     ]
 
     def get_points_from_texts(self, html: str):

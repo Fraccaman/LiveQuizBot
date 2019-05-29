@@ -1,3 +1,5 @@
+import sys
+from urllib.parse import quote
 from dataclasses import dataclass
 from typing import Dict
 
@@ -17,9 +19,9 @@ class Prima(Solver):
 
     def craft_queries(self):
         self.clean_for_points()
-        return [DOMAIN + self.copy.first_answer + ' date',
-                DOMAIN + self.copy.second_answer + ' date',
-                DOMAIN + self.copy.third_answer + ' date'
+        return [DOMAIN + quote(self.original.first_answer + ' date'),
+                DOMAIN + quote(self.original.second_answer + ' date'),
+                DOMAIN + quote(self.original.third_answer + ' date')
                 ]
 
     def get_points_from_texts(self, html: str):
@@ -27,9 +29,9 @@ class Prima(Solver):
         try:
             date_str = soup.find('div', {'class': 'Z0LcW'}).text
             d = parse(date_str)
-            return 10000 * d.year + 100 * d.month + d.day
+            return 10000 * d.year + 100 * d.month + 1 * d.day
         except Exception:
-            return 0
+            return sys.maxsize
 
     def select_points(self, dates: Dict):
         return {

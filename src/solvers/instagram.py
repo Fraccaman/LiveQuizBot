@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 
@@ -15,9 +16,9 @@ class Instagram(Solver):
         return self.type == instance.solver
 
     def craft_queries(self):
-        return [DOMAIN + self.copy.first_answer + ' instagram',
-                DOMAIN + self.copy.second_answer + ' instagram',
-                DOMAIN + self.copy.third_answer + ' instagram'
+        return [DOMAIN + quote(self.copy.first_answer + ' instagram'),
+                DOMAIN + quote(self.copy.second_answer + ' instagram'),
+                DOMAIN + quote(self.copy.third_answer + ' instagram')
                 ]
 
     def get_points_from_texts(self, html: str):

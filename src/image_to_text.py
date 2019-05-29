@@ -18,7 +18,7 @@ SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.2 * w, h - 30)
 def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str, int]:
     question_image = img.crop(QUESTION_BOUNDARIES(w, h))
     if debug: question_image.show()
-    question_text = pytesseract.image_to_string(question_image, lang='ita')
+    question_text = pytesseract.image_to_string(question_image, lang='ita').replace('ii ', 'il ').replace('lIl', 'Il ').strip()
     n_of_lines = question_text.count('\n') + 1
     question_text = question_text.replace('\n', ' ')
     n_of_lines_space = (n_of_lines - 1) * 40 + (25 if n_of_lines == 3 else 0)
@@ -32,12 +32,12 @@ def answer_to_text(data: List[Any]) -> str:
     debug = data[2]
     answer_image = img.crop(boundaries)
     if debug: answer_image.show()
-    answer_text = pytesseract.image_to_string(answer_image, lang='ita').replace('\n', ' ')
+    answer_text = pytesseract.image_to_string(answer_image, lang='ita').replace('\n', ' ').replace('ii ', 'il ').replace('lIl ', 'Il ').strip()
     if answer_text == "":
         w, h = answer_image.size
         answer_image = answer_image.crop(SMALL_ANSWER_BOUNDARIES(w, h))
         if debug: answer_image.show()
-        answer_text = pytesseract.image_to_string(answer_image, lang='ita', config='--psm 6').replace('\n', ' ')
+        answer_text = pytesseract.image_to_string(answer_image, lang='ita', config='--psm 6').replace('\n', ' ').replace('ii ', 'il ').replace('lIl ', 'il ')
     return answer_text
 
 

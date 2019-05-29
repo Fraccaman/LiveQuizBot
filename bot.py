@@ -13,7 +13,7 @@ from src.utlity import files, timeit
 
 
 def do_screenshot():
-    #Get the current time
+    # Get the current time
     year, month, day, hour = time.strftime("%Y,%m,%d,%H").split(',')
 
     # Generate the name for today's folder, and the path
@@ -38,6 +38,7 @@ def do_screenshot():
 @timeit
 def do_question(pool: ThreadPool, file: str, debug: bool = False):
     instance = img_to_text(file, pool, debug)
+    # print(instance.first_answer, '\n', instance.second_answer,'\n', instance.third_answer)
     instance.print_question()
     switch = Switch(pool)
     switch.run(instance)
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         elif args.test:
             for index, file in enumerate(files('testing')):
                 if file.split('.')[1] == 'jpg' or file.split('.')[1] == 'png':
-                    do_question(pool, file, debug=False)
+                    do_question(pool, file, debug=True)
                     key = input()
                     if key == 'y':
                         move(file, 'screenshot/' + file.split('/')[1])

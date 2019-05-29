@@ -33,5 +33,3 @@ def files(path: str):
 def ner_extractor(text: str):
     doc = nlp(text)
     return [(ent.text, ent.label_) for ent in doc.ents]
-
-
