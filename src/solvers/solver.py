@@ -10,6 +10,7 @@ from typing import List, Dict
 
 import nltk
 import requests
+requests.packages.urllib3.disable_warnings()
 from bs4 import BeautifulSoup, SoupStrainer
 from num2words import num2words
 from unidecode import unidecode
@@ -29,6 +30,7 @@ class Solver(ABC):
     fields: List = field(default_factory=lambda: ['question', 'first_answer', 'second_answer', 'third_answer'])
     ita_stemmer = nltk.stem.snowball.ItalianStemmer()
     req = requests.Session()
+    req.verify = False
 
     @abstractmethod
     def is_valid_type(self, instance: Instance):
@@ -131,7 +133,7 @@ class Solver(ABC):
         try:
             title = self.remove_accent_punctuation(data[0].find('div', {'class': 'r'}).find('h3').text.lower())
             description = self.remove_accent_punctuation(data[0].find('div', {'class': 's'}).find('span', {'class': 'st'}).text.lower())
-        except Exception as e:
+        except Exception as _:
             return data[1]
 
         for index, answer in enumerate(data[1].keys()):

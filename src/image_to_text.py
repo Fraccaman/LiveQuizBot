@@ -8,6 +8,7 @@ from pytesseract import pytesseract
 
 from src.instance import Instance
 from src.parallel_process import parallel_execution
+from src.utlity import timeit
 
 QUESTION_BOUNDARIES = lambda w, h: (35, 450, w - 35, h - 1170)
 FIRST_ANSWER_BOUNDARIES = lambda w, h, space: (35, 610 + space, w - 120, h - 1130 + space)
@@ -15,7 +16,7 @@ SECOND_ANSWER_BOUNDARIES = lambda w, h, space: (35, 820 + space, w - 120, h - 89
 THIRD_ANSWER_BOUNDARIES = lambda w, h, space: (35, 1020 + space, w - 120, h - 700 + space)
 SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.2 * w, h - 30)
 
-
+@timeit
 def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str, int]:
     question_image = img.crop(QUESTION_BOUNDARIES(w, h))
     if debug: question_image.show()
@@ -26,7 +27,7 @@ def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str
     if debug: print('The question is: {}'.format(question_text))
     return question_text, n_of_lines_space
 
-
+@timeit
 def answer_to_text(data: List[Any]) -> str:
     img = data[0]
     boundaries = data[1]
@@ -63,7 +64,7 @@ def normalize_image(file_path: str):
 def get_width_height(img: Image.Image) -> Tuple[int, int]:
     return img.size
 
-
+@timeit
 def img_to_text(file_path: str, pool: ThreadPool, debug: bool) -> Instance:
     img = normalize_image(file_path)
 

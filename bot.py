@@ -51,11 +51,10 @@ if __name__ == '__main__':
     sp.add_argument('--test', help='Test screens', action='store_true')
     sp.add_argument('--dump', help='Dump questions', action='store_true')
     sp.add_argument('--test-dump', help='Test dump', action='store_true')
-    sp.add_argument('--test-dump-id', help='Test dump', type=int)
-    sp.add_argument('--table', help='Test dump', action='store_true')
+    sp.add_argument('--test-dump-id', help='Test dump with question id', type=int)
     args = parser.parse_args()
 
-    pool = ThreadPool(3)
+    pool = ThreadPool(8)
 
     try:
         if args.live:
