@@ -71,7 +71,7 @@ if __name__ == '__main__':
         elif args.test:
             for index, file in enumerate(files('testing')):
                 if file.split('.')[1] == 'jpg' or file.split('.')[1] == 'png':
-                    do_question(pool, file, debug=True)
+                    do_question(pool, file, debug=False)
                     key = input()
                     if key == 'y':
                         move(file, 'screenshot/' + file.split('/')[1])

@@ -9,14 +9,15 @@ from multiprocessing.pool import ThreadPool
 from typing import List, Dict
 
 import nltk
-from bs4 import BeautifulSoup
+import requests
+from bs4 import BeautifulSoup, SoupStrainer
 from num2words import num2words
 from unidecode import unidecode
 
 from src.costants import IT_STOP_WORDS, DOMAIN, HEADERS, Colors, COMMA_REMOVE
 from src.instance import Instance, SolverType
 from src.parallel_process import parallel_execution
-from src.requester import req
+from src.utlity import timeit
 
 
 @dataclass
@@ -27,6 +28,7 @@ class Solver(ABC):
     copy: Instance = field(init=False)
     fields: List = field(default_factory=lambda: ['question', 'first_answer', 'second_answer', 'third_answer'])
     ita_stemmer = nltk.stem.snowball.ItalianStemmer()
+    req = requests.Session()
 
     @abstractmethod
     def is_valid_type(self, instance: Instance):
@@ -92,16 +94,19 @@ class Solver(ABC):
             DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.third_answer))
         ]
 
+    @timeit
     def get_page(self, url: str):
-        return req().get(url, headers=HEADERS).text
+        return self.req.get(url, headers=HEADERS).text
 
     @staticmethod
     def find_occurences(to_search: str, to_find: str):
         return re.finditer(r'\b%s\b' % re.escape(to_find), to_search)
 
+    @timeit
     def get_points_from_texts(self, html: str):
-        soup = BeautifulSoup(html, features="html.parser")
-        all_links = soup.find_all('div', {'class': 'g'})
+        strainer = SoupStrainer('div', {'class': 'srg', })
+        soup = BeautifulSoup(html, 'lxml', parse_only=strainer)
+        all_links = soup.find_all('div', {'class': 'g', })
 
         points = {
             self.copy.to_lower('first_answer'): 0,
