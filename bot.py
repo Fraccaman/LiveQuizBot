@@ -128,7 +128,7 @@ if __name__ == '__main__':
                     switch.run(instance)
                     key = input()
         elif args.test_dump_id:
-            with open('dump.txt') as json_file:
+            with open('dump_patty.txt') as json_file:
                 data = json.load(json_file, strict=False)
                 switch = Switch(pool)
                 for question in data:
