@@ -21,13 +21,14 @@ SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.2 * w, h - 30)
 def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str, int]:
     question_image = img.crop(QUESTION_BOUNDARIES(w, h))
     question_image = question_image.point(lambda x: 0 if x < 140 else 255)
+    if debug: question_image.show()
     question_image.save('question.png')
     res = subprocess.run(['tesseract', 'question.png', 'stdout', 'quiet'], stdout=subprocess.PIPE)
-    question_text = res.stdout.decode('utf-8').replace('\n', ' ').replace('ii ', 'il ').replace('lIl', 'Il ').replace(
+    question_text = res.stdout.decode('utf-8').replace('ii ', 'il ').replace('lIl', 'Il ').replace(
         'll ', 'Il ').replace('|', 'I').strip()
     n_of_lines = question_text.count('\n') + 1
     question_text = question_text.replace('\n', ' ')
-    n_of_lines_space = (n_of_lines - 1) * 40 + (25 if n_of_lines == 3 else 0)
+    n_of_lines_space = (n_of_lines - 1) * 40 + (20 if n_of_lines == 3 else 0)
     if debug: print('The question is: {}'.format(question_text))
     return question_text, n_of_lines_space
 
@@ -38,6 +39,7 @@ def answer_to_text(data: List[Any]) -> str:
     boundaries = data[1]
     debug = data[2]
     answer_image = img.crop(boundaries)
+    if debug: answer_image.show()
     answer_file_name = " ".join(str(x) for x in boundaries) + '.png'
     answer_image.save(answer_file_name)
     res = subprocess.run(['tesseract', answer_file_name, 'stdout', 'quiet'], stdout=subprocess.PIPE)
