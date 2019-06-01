@@ -11,7 +11,7 @@ class Colors:
 
 
 INPUT_SENTENCE = "Press {}{}ENTER{} to take a screenshot of the question or {}{}q{} to quit:".format(
-    Colors.BOLD,Colors.GREEN, Colors.END, Colors.BOLD, Colors.RED, Colors.END)
+    Colors.BOLD, Colors.GREEN, Colors.END, Colors.BOLD, Colors.RED, Colors.END)
 
 BASE_SCREENSHOT_FOLDER = "live_screens"
 
@@ -21,6 +21,8 @@ BETWEEN_MODE_TERMS = ['tra quest', 'quale di quest', 'fra questi', 'tra loro', '
 COORD_MODE_TERMS = ['nord', 'sud', 'ovest', 'est']
 
 COMMA_REMOVE = ['come', 'perche', 'quando', 'chi', 'cosa', 'quale', 'qual']
+
+PRIMA_MODE_TERMS = ['prima', 'primo', 'precedente']
 
 IT_STOP_WORDS = nltk.corpus.stopwords.words('italian') + ['dell', 'indica', 'vera', 'l\'affermazione', 'i', 'la',
                                                           'queste', 'questo', 'questi', 'in', 'quale', 'quali', 'l',

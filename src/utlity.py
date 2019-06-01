@@ -5,6 +5,7 @@ import spacy
 
 nlp = spacy.load("it_core_news_sm")
 
+
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()
@@ -14,7 +15,7 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            if True:
+            if False:
                 print('%r  %2.2f ms' %
                       (method.__name__, (te - ts) * 1000))
         return result
@@ -33,5 +34,3 @@ def files(path: str):
 def ner_extractor(text: str):
     doc = nlp(text)
     return [(ent.text, ent.label_) for ent in doc.ents]
-
-

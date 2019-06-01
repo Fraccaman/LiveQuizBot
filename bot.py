@@ -1,10 +1,9 @@
-# 23.05.2019 -- 3365
 import argparse
 import json
 import os
+import time
 from multiprocessing.pool import ThreadPool
 from shutil import move
-import time
 
 from src.costants import BASE_SCREENSHOT_FOLDER, INPUT_SENTENCE
 from src.image_to_text import img_to_text
@@ -14,7 +13,7 @@ from src.utlity import files, timeit
 
 
 def do_screenshot():
-    #Get the current time
+    # Get the current time
     year, month, day, hour = time.strftime("%Y,%m,%d,%H").split(',')
 
     # Generate the name for today's folder, and the path
@@ -39,6 +38,7 @@ def do_screenshot():
 @timeit
 def do_question(pool: ThreadPool, file: str, debug: bool = False):
     instance = img_to_text(file, pool, debug)
+    # print(instance.first_answer, '\n', instance.second_answer,'\n', instance.third_answer)
     instance.print_question()
     switch = Switch(pool)
     switch.run(instance)
@@ -51,11 +51,10 @@ if __name__ == '__main__':
     sp.add_argument('--test', help='Test screens', action='store_true')
     sp.add_argument('--dump', help='Dump questions', action='store_true')
     sp.add_argument('--test-dump', help='Test dump', action='store_true')
-    sp.add_argument('--test-dump-id', help='Test dump', type=int)
-    sp.add_argument('--table', help='Test dump', action='store_true')
+    sp.add_argument('--test-dump-id', help='Test dump with question id', type=int)
     args = parser.parse_args()
 
-    pool = ThreadPool(3)
+    pool = ThreadPool(8)
 
     try:
         if args.live:
@@ -69,7 +68,7 @@ if __name__ == '__main__':
                     pool.close()
                     pool.join()
         elif args.test:
-            for index, file in enumerate(files('test')):
+            for index, file in enumerate(files('testing')):
                 if file.split('.')[1] == 'jpg' or file.split('.')[1] == 'png':
                     do_question(pool, file, debug=False)
                     key = input()
@@ -94,19 +93,22 @@ if __name__ == '__main__':
                                     {
                                         'first_answer': instance.first_answer,
                                         'correct': False,
-                                        'bot': list(point.keys()).index(instance.first_answer) == 0 and point[instance.first_answer] != 0,
+                                        'bot': list(point.keys()).index(instance.first_answer) == 0 and point[
+                                            instance.first_answer] != 0,
                                         'points': point[instance.first_answer]
                                     },
                                     {
                                         'second_answer': instance.second_answer,
                                         'correct': False,
-                                        'bot': list(point.keys()).index(instance.second_answer) == 0 and point[instance.second_answer] != 0,
+                                        'bot': list(point.keys()).index(instance.second_answer) == 0 and point[
+                                            instance.second_answer] != 0,
                                         'points': point[instance.second_answer]
                                     },
                                     {
                                         'third_answer': instance.third_answer,
                                         'correct': False,
-                                        'bot': list(point.keys()).index(instance.third_answer) == 0 and point[instance.third_answer] != 0,
+                                        'bot': list(point.keys()).index(instance.third_answer) == 0 and point[
+                                            instance.third_answer] != 0,
                                         'points': point[instance.third_answer]
                                     },
                                 ],
@@ -119,7 +121,9 @@ if __name__ == '__main__':
                 data = json.load(json_file, strict=False)
                 switch = Switch(pool)
                 for question in data:
-                    instance = Instance.create_instance(question['question'], question['answers'][0]['first_answer'], question['answers'][1]['second_answer'], question['answers'][2]['third_answer'])
+                    instance = Instance.create_instance(question['question'], question['answers'][0]['first_answer'],
+                                                        question['answers'][1]['second_answer'],
+                                                        question['answers'][2]['third_answer'])
                     instance.print_question()
                     switch.run(instance)
                     key = input()
@@ -129,7 +133,10 @@ if __name__ == '__main__':
                 switch = Switch(pool)
                 for question in data:
                     if question['index'] == args.test_dump_id:
-                        instance = Instance.create_instance(question['question'], question['answers'][0]['first_answer'], question['answers'][1]['second_answer'], question['answers'][2]['third_answer'])
+                        instance = Instance.create_instance(question['question'],
+                                                            question['answers'][0]['first_answer'],
+                                                            question['answers'][1]['second_answer'],
+                                                            question['answers'][2]['third_answer'])
                         instance.print_question()
                         switch.run(instance)
                         key = input()

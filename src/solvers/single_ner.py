@@ -1,6 +1,6 @@
-import string
 from dataclasses import dataclass
 from typing import Dict, List
+from urllib.parse import quote
 
 from src.costants import DOMAIN
 from src.instance import Instance
@@ -31,9 +31,9 @@ class SingleNer(Solver):
     def craft_queries(self):
         subject = self.copy.question.split("\"")[1]
         return [
-            DOMAIN + subject + ' "' + self.copy.ner_question[0][0] + '" AND ' + self.copy.first_answer,
-            DOMAIN + subject + ' "' + self.copy.ner_question[0][0] + '" AND ' + self.copy.second_answer,
-            DOMAIN + subject + ' "' + self.copy.ner_question[0][0] + '" AND ' + self.copy.third_answer
+            DOMAIN + subject + ' "' + quote(self.copy.ner_question[0][0] + '" AND ' + self.copy.first_answer),
+            DOMAIN + subject + ' "' + quote(self.copy.ner_question[0][0] + '" AND ' + self.copy.second_answer),
+            DOMAIN + subject + ' "' + quote(self.copy.ner_question[0][0] + '" AND ' + self.copy.third_answer)
         ]
 
     def select_points(self, points: List[Dict[str, int]]):

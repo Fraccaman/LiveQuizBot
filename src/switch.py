@@ -7,6 +7,7 @@ from src.solvers.between import Between
 from src.solvers.coord import Coord
 from src.solvers.default import Default
 from src.solvers.instagram import Instagram
+from src.solvers.prima import Prima
 from src.solvers.single_ner import SingleNer
 from src.solvers.terzetto import Terzetto
 
@@ -18,6 +19,7 @@ class Switch:
 
     def __post_init__(self):
         self.solvers = [
+            Prima(self.pool, SolverType.PRIMA),
             SingleNer(self.pool, SolverType.SINGLE_NER),
             Instagram(self.pool, SolverType.INSTAGRAM),
             Coord(self.pool, SolverType.COORD),
@@ -30,5 +32,3 @@ class Switch:
         for solver in self.solvers:
             if solver.is_valid_type(instance):
                 return solver.solve(instance)
-
-

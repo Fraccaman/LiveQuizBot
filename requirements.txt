@@ -1,3 +1,4 @@
+dateutil
 image
 nltk
 requests
@@ -7,3 +8,4 @@ pytesseract
 num2words
 pillow
 spacy
+italian_dictionary

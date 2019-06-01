@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List
 
 from bs4 import BeautifulSoup
 
@@ -14,8 +14,11 @@ class Default(Solver):
         return True
 
     def get_result_number(self, html):
-        soup = BeautifulSoup(html, features="html.parser")
-        results_text = soup.find('div', {'id': 'resultStats'}).text
+        soup = BeautifulSoup(html, 'lxml')
+        try:
+            results_text = soup.find('div', {'id': 'resultStats'}).text
+        except Exception as _:
+            return 0
         num = results_text.split(' ')[1].replace('’', '').replace(',', '')
         return int(num) if num.isdigit() else 0
 
