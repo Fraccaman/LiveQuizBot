@@ -22,6 +22,8 @@ COORD_MODE_TERMS = ['nord', 'sud', 'ovest', 'est']
 
 COMMA_REMOVE = ['come', 'perche', 'quando', 'chi', 'cosa', 'quale', 'qual']
 
+PRIMA_MODE_TERMS = ['prima', 'primo', 'precedente']
+
 IT_STOP_WORDS = nltk.corpus.stopwords.words('italian') + ['dell', 'indica', 'vera', 'l\'affermazione', 'i', 'la',
                                                           'queste', 'questo', 'questi', 'in', 'quale', 'quali', 'l',
                                                           '’', '\'', '\"', '``', '\'', '`', 'fra', 'l\'', ' d ', 'd\'']

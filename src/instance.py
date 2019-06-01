@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Dict
 
-from src.costants import BETWEEN_MODE_TERMS, COORD_MODE_TERMS, INSTAGRAM_MODE_TERMS
+from src.costants import BETWEEN_MODE_TERMS, COORD_MODE_TERMS, INSTAGRAM_MODE_TERMS, PRIMA_MODE_TERMS
 from src.utlity import ner_extractor, nlp
 
 
@@ -58,16 +58,13 @@ class Instance:
             term in question_lower.translate(str.maketrans('', '', string.punctuation)).split(' ') for term in
             INSTAGRAM_MODE_TERMS) else solver
         solver = SolverType.SINGLE_NER if question_lower.count("\"") == 2 and len(self.ner_question) == 1 and \
-                                          self.ner_question[0][0].lower() not in question_lower.split('"')[
-                                              1] and self.ner_question[0][1]  != 'MISC' else solver
-        solver = SolverType.PRIMA if 'chi' not in question_lower and 'primo' in question_lower or 'prima' in question_lower else solver
+                                          self.ner_question[0][0].lower() not in question_lower.split('"')[1] \
+                                          and self.ner_question[0][1]  != 'MISC' else solver
+        solver = SolverType.PRIMA if not 'chi' in question_lower and any(
+            term in question_lower for term in PRIMA_MODE_TERMS) else solver
 
         if solver == SolverType.PRIMA:
             self.is_negative = True
-
-        # print(self.ner_first_answer, self.is_first_complete_ner)
-        # print(self.ner_second_answer, self.is_second_complete_ner)
-        # print(self.ner_third_answer, self.is_third_complete_ner)
 
         self.solver = solver
 

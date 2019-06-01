@@ -17,22 +17,6 @@ SECOND_ANSWER_BOUNDARIES = lambda w, h, space: (35, 910 + space, w - 120, h - 83
 THIRD_ANSWER_BOUNDARIES = lambda w, h, space: (35, 1130 + space, w - 120, h - 610 + space)
 SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.2 * w, h - 30)
 
-# Page segmentation modes:
-#   0    Orientation and script detection (OSD) only.
-#   1    Automatic page segmentation with OSD.
-#   2    Automatic page segmentation, but no OSD, or OCR.
-#   3    Fully automatic page segmentation, but no OSD. (Default)
-#   4    Assume a single column of text of variable sizes.
-#   5    Assume a single uniform block of vertically aligned text.
-#   6    Assume a single uniform block of text.
-#   7    Treat the image as a single text line.
-#   8    Treat the image as a single word.
-#   9    Treat the image as a single word in a circle.
-#  10    Treat the image as a single character.
-#  11    Sparse text. Find as much text as possible in no particular order.
-#  12    Sparse text with OSD.
-#  13    Raw line. Treat the image as a single text line,
-#                         bypassing hacks that are Tesseract-specific.
 
 @timeit
 def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str, int]:
@@ -46,6 +30,7 @@ def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str
     n_of_lines_space = (n_of_lines - 1) * 40 + (25 if n_of_lines == 3 else 0)
     if debug: print('The question is: {}'.format(question_text))
     return question_text, n_of_lines_space
+
 
 @timeit
 def answer_to_text(data: List[Any]) -> str:
