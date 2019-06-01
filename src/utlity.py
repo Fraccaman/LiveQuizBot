@@ -5,6 +5,7 @@ import spacy
 
 nlp = spacy.load("it_core_news_sm")
 
+
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()

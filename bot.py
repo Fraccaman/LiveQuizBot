@@ -1,9 +1,9 @@
 import argparse
 import json
 import os
+import time
 from multiprocessing.pool import ThreadPool
 from shutil import move
-import time
 
 from src.costants import BASE_SCREENSHOT_FOLDER, INPUT_SENTENCE
 from src.image_to_text import img_to_text
@@ -93,19 +93,22 @@ if __name__ == '__main__':
                                     {
                                         'first_answer': instance.first_answer,
                                         'correct': False,
-                                        'bot': list(point.keys()).index(instance.first_answer) == 0 and point[instance.first_answer] != 0,
+                                        'bot': list(point.keys()).index(instance.first_answer) == 0 and point[
+                                            instance.first_answer] != 0,
                                         'points': point[instance.first_answer]
                                     },
                                     {
                                         'second_answer': instance.second_answer,
                                         'correct': False,
-                                        'bot': list(point.keys()).index(instance.second_answer) == 0 and point[instance.second_answer] != 0,
+                                        'bot': list(point.keys()).index(instance.second_answer) == 0 and point[
+                                            instance.second_answer] != 0,
                                         'points': point[instance.second_answer]
                                     },
                                     {
                                         'third_answer': instance.third_answer,
                                         'correct': False,
-                                        'bot': list(point.keys()).index(instance.third_answer) == 0 and point[instance.third_answer] != 0,
+                                        'bot': list(point.keys()).index(instance.third_answer) == 0 and point[
+                                            instance.third_answer] != 0,
                                         'points': point[instance.third_answer]
                                     },
                                 ],
@@ -118,7 +121,9 @@ if __name__ == '__main__':
                 data = json.load(json_file, strict=False)
                 switch = Switch(pool)
                 for question in data:
-                    instance = Instance.create_instance(question['question'], question['answers'][0]['first_answer'], question['answers'][1]['second_answer'], question['answers'][2]['third_answer'])
+                    instance = Instance.create_instance(question['question'], question['answers'][0]['first_answer'],
+                                                        question['answers'][1]['second_answer'],
+                                                        question['answers'][2]['third_answer'])
                     instance.print_question()
                     switch.run(instance)
                     key = input()
@@ -128,7 +133,10 @@ if __name__ == '__main__':
                 switch = Switch(pool)
                 for question in data:
                     if question['index'] == args.test_dump_id:
-                        instance = Instance.create_instance(question['question'], question['answers'][0]['first_answer'], question['answers'][1]['second_answer'], question['answers'][2]['third_answer'])
+                        instance = Instance.create_instance(question['question'],
+                                                            question['answers'][0]['first_answer'],
+                                                            question['answers'][1]['second_answer'],
+                                                            question['answers'][2]['third_answer'])
                         instance.print_question()
                         switch.run(instance)
                         key = input()

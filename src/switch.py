@@ -32,5 +32,3 @@ class Switch:
         for solver in self.solvers:
             if solver.is_valid_type(instance):
                 return solver.solve(instance)
-
-

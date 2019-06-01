@@ -1,15 +1,16 @@
 import operator
 import re
 import string
-from urllib.parse import quote
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass, field
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict
+from urllib.parse import quote
 
 import nltk
 import requests
+
 requests.packages.urllib3.disable_warnings()
 from bs4 import BeautifulSoup, SoupStrainer
 from num2words import num2words
@@ -56,14 +57,17 @@ class Solver(ABC):
             word_tokenized_no_punct_no_sw = [x for x in word_tokenized_no_punct if
                                              x not in set(IT_STOP_WORDS)]
             word_tokenized_no_punct_no_sw_no_apostrophe = [x.split("'") for x in word_tokenized_no_punct_no_sw]
-            word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y in
+            word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y
+                                                           in
                                                            x]
 
             if f != 'question':
-                self.copy.__dict__[f] = ' '.join(unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).split())
+                self.copy.__dict__[f] = ' '.join(
+                    unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).split())
             else:
                 if is_mandatory != '':
-                    q = ' '.join(word_tokenized_no_punct_no_sw_no_apostrophe).replace(is_mandatory, '"{}"'.format(is_mandatory))
+                    q = ' '.join(word_tokenized_no_punct_no_sw_no_apostrophe).replace(is_mandatory,
+                                                                                      '"{}"'.format(is_mandatory))
                     self.copy.__dict__[f] = unidecode(q).strip()
                 else:
                     self.copy.__dict__[f] = unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).strip()
@@ -81,7 +85,8 @@ class Solver(ABC):
         for q in question:
             if any(word in q for word in COMMA_REMOVE) and q[0] in COMMA_REMOVE:
                 self.copy.question += q
-        if not self.copy.question or self.original.to_lower('question').count('\"') > 1: self.copy.question = self.original.to_lower('question')
+        if not self.copy.question or self.original.to_lower('question').count(
+            '\"') > 1: self.copy.question = self.original.to_lower('question')
         parallel_execution(self.pool, self.clean_impl, self.fields)
 
     def _init(self, instance: Instance):
@@ -132,7 +137,8 @@ class Solver(ABC):
     def get_points_link(self, data: List):
         try:
             title = self.remove_accent_punctuation(data[0].find('div', {'class': 'r'}).find('h3').text.lower())
-            description = self.remove_accent_punctuation(data[0].find('div', {'class': 's'}).find('span', {'class': 'st'}).text.lower())
+            description = self.remove_accent_punctuation(
+                data[0].find('div', {'class': 's'}).find('span', {'class': 'st'}).text.lower())
         except Exception as _:
             return data[1]
 
@@ -167,7 +173,8 @@ class Solver(ABC):
 
     @staticmethod
     def _print_score(n, res, index, win=False):
-        print('{}{}: {}{} - score: {}'.format(Colors.BOLD if not win else Colors.BOLD + Colors.RED, n, res[index][0].upper(), Colors.END, res[index][1]))
+        print('{}{}: {}{} - score: {}'.format(Colors.BOLD if not win else Colors.BOLD + Colors.RED, n,
+                                              res[index][0].upper(), Colors.END, res[index][1]))
 
     def print_results(self, point: Dict[str, int]):
         scores = sorted(point.values())
