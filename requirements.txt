@@ -8,3 +8,4 @@ pytesseract
 num2words
 pillow
 spacy
+italian_dictionary
