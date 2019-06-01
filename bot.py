@@ -38,7 +38,7 @@ def do_screenshot():
 @timeit
 def do_question(pool: ThreadPool, file: str, debug: bool = False):
     instance = img_to_text(file, pool, debug)
-    print(instance.first_answer, '\n', instance.second_answer,'\n', instance.third_answer)
+    # print(instance.first_answer, '\n', instance.second_answer,'\n', instance.third_answer)
     instance.print_question()
     switch = Switch(pool)
     switch.run(instance)
