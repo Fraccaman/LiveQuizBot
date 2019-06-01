@@ -58,10 +58,14 @@ class Prima(Solver):
             except Exception:
                 return sys.maxsize
         else:
-            text = soup.find('span', {'class': 'e24Kjd'}).text
-            reg = re.search(r'(\d{4})', text)
-            year = int(reg.group(0)) if reg else sys.maxsize
-            return year
+            try:
+                text = soup.find('span', {'class': 'e24Kjd'}).text
+                reg = re.search(r'(\d{4})', text)
+                year = int(reg.group(0)) if reg else sys.maxsize
+                return year
+            except Exception as _:
+                return sys.maxsize
+
 
     def select_points(self, dates: Dict):
         return {
