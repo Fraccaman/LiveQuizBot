@@ -10,7 +10,7 @@ from src.instance import Instance
 from src.parallel_process import parallel_execution
 from src.utlity import timeit
 
-QUESTION_BOUNDARIES = lambda w, h: (35, 450, w - 35, h - 1170)
+QUESTION_BOUNDARIES = lambda w, h: (35, 450, w - 35, h - 1190)
 FIRST_ANSWER_BOUNDARIES = lambda w, h, space: (35, 690 + space, w - 120, h - 1050 + space)
 SECOND_ANSWER_BOUNDARIES = lambda w, h, space: (35, 910 + space, w - 120, h - 830 + space)
 THIRD_ANSWER_BOUNDARIES = lambda w, h, space: (35, 1130 + space, w - 120, h - 610 + space)
@@ -28,7 +28,7 @@ def question_to_text(img: Image.Image, w: int, h: int, debug: bool) -> Tuple[str
         'll ', 'Il ').replace('|', 'I').strip()
     n_of_lines = question_text.count('\n') + 1
     question_text = question_text.replace('\n', ' ')
-    n_of_lines_space = (n_of_lines - 1) * 40 + (20 if n_of_lines == 3 else 0)
+    n_of_lines_space = (n_of_lines - 1) * 40
     if debug: print('The question is: {}'.format(question_text))
     return question_text, n_of_lines_space
 
