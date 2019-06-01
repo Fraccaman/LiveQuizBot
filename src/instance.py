@@ -63,7 +63,7 @@ class Instance:
         solver = SolverType.PRIMA if not 'chi' in question_lower and any(
             term in question_lower for term in PRIMA_MODE_TERMS) else solver
 
-        if solver == SolverType.PRIMA:
+        if solver == SolverType.PRIMA and not 'dopo' in question_lower:
             self.is_negative = True
 
         self.solver = solver

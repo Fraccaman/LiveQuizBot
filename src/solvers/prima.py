@@ -1,5 +1,7 @@
+import itertools
 import re
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from typing import Dict
 from urllib.parse import quote
@@ -54,9 +56,14 @@ class Prima(Solver):
             try:
                 date_str = soup.find('div', {'class': 'Z0LcW'}).text
                 d = parse(date_str)
-                return 10000 * d.year + 100 * d.month + 1 * d.day
+                return d.year
             except Exception:
-                return sys.maxsize
+                all_texts = [s.find_all(text=True) for s in soup.find_all('span')] + [s.find_all(text=True) for s in
+                                                                                      soup.find_all('h3')]
+                all_texts_to_string = ' '.join(list(itertools.chain.from_iterable(all_texts)))
+                reg = re.findall(r'(\d{4})', all_texts_to_string)
+                c = Counter(reg)
+                return int(max(c, key=c.get))
         else:
             try:
                 text = soup.find('span', {'class': 'e24Kjd'}).text
@@ -64,7 +71,12 @@ class Prima(Solver):
                 year = int(reg.group(0)) if reg else sys.maxsize
                 return year
             except Exception as _:
-                return sys.maxsize
+                all_texts = [s.find_all(text=True) for s in soup.find_all('span')] + [s.find_all(text=True) for s in
+                                                                                      soup.find_all('h3')]
+                all_texts_to_string = ' '.join(list(itertools.chain.from_iterable(all_texts)))
+                reg = re.findall(r'(\d{4})', all_texts_to_string)
+                c = Counter(reg)
+                return int(max(c, key=c.get))
 
     def select_points(self, dates: Dict):
         return {
