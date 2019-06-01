@@ -12,8 +12,6 @@ from src.costants import DOMAIN
 from src.instance import Instance
 from src.solvers.solver import Solver
 
-# TODO: handle case where answers are material stuff
-
 
 @dataclass
 class Prima(Solver):
@@ -24,21 +22,21 @@ class Prima(Solver):
     def craft_queries(self):
         not_found = 0
         try:
-            _ = italian_dictionary.get_only_definition(self.original.first_answer, limit=3)
-        except Exception as e:
+            _ = italian_dictionary.get_only_definition(self.original.first_answer, limit=1)
+        except Exception as _:
             not_found = not_found + 1
 
         try:
-            _ = italian_dictionary.get_only_definition(self.original.second_answer, limit=3)
-        except Exception as e:
+            _ = italian_dictionary.get_only_definition(self.original.second_answer, limit=1)
+        except Exception as _:
             not_found = not_found + 1
 
         try:
-            _ = italian_dictionary.get_only_definition(self.original.third_answer, limit=3)
-        except Exception as e:
+            _ = italian_dictionary.get_only_definition(self.original.third_answer, limit=1)
+        except Exception as _:
             not_found = not_found + 1
 
-        self.clean_for_points()
+        # self.clean_for_points()
         if not_found > 1:
             return [DOMAIN + quote(self.original.first_answer + ' date'),
                     DOMAIN + quote(self.original.second_answer + ' date'),
@@ -62,7 +60,7 @@ class Prima(Solver):
         else:
             text = soup.find('span', {'class': 'e24Kjd'}).text
             reg = re.search(r'(\d{4})', text)
-            year = int(reg.group(0)) * 10000 if reg else sys.maxsize
+            year = int(reg.group(0)) if reg else sys.maxsize
             return year
 
     def select_points(self, dates: Dict):
