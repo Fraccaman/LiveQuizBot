@@ -118,7 +118,7 @@ class Solver(ABC):
 
         # TODO: better parallelize
         args = [[link, deepcopy(points)] for link in all_links]
-        res = ThreadPool(6).map(self.get_points_link, args)
+        res = ThreadPool(8).map(self.get_points_link, args)
         res = ({k: sum([x[k] for x in res if k in x]) for i in res for k, v in i.items()})
 
         return res

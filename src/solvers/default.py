@@ -14,7 +14,7 @@ class Default(Solver):
         return True
 
     def get_result_number(self, html):
-        soup = BeautifulSoup(html, features="html.parser")
+        soup = BeautifulSoup(html, 'lxml')
         try:
             results_text = soup.find('div', {'id': 'resultStats'}).text
         except Exception as _:

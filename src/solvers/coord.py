@@ -27,7 +27,7 @@ class Coord(Solver):
                     ]
 
     def get_points_from_texts(self, html: str):
-        soup = BeautifulSoup(html, features="html.parser")
+        soup = BeautifulSoup(html, 'lxml')
         return soup.find('div', {'class', 'Z0LcW'}).text.strip()
 
     def select_points(self, points):
@@ -66,21 +66,21 @@ class Coord(Solver):
             else:
                 north_bucket.sort()
                 lowest_value = north_bucket[0]
-        elif (direction == 'nord'):
+        elif direction == 'nord':
             if len(north_bucket) > 0:
                 north_bucket.sort(reverse=True)
                 lowest_value = north_bucket[0]
             else:
                 south_bucket.sort()
                 lowest_value = south_bucket[0]
-        elif (direction == 'est'):
+        elif direction == 'est':
             if len(east_bucket) > 0:
                 east_bucket.sort(reverse=True)
                 lowest_value = east_bucket[0]
             else:
                 west_bucket.sort()
                 lowest_value = west_bucket[0]
-        elif (direction == 'ovest'):
+        elif direction == 'ovest':
             if len(west_bucket) > 0:
                 west_bucket.sort(reverse=True)
                 lowest_value = west_bucket[0]

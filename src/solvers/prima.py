@@ -25,7 +25,7 @@ class Prima(Solver):
                 ]
 
     def get_points_from_texts(self, html: str):
-        soup = BeautifulSoup(html, features="html.parser")
+        soup = BeautifulSoup(html, 'lxml')
         try:
             date_str = soup.find('div', {'class': 'Z0LcW'}).text
             d = parse(date_str)
