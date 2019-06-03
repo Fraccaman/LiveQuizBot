@@ -24,9 +24,9 @@ COMMA_REMOVE = ['come', 'perche', 'quando', 'chi', 'cosa', 'quale', 'qual']
 
 PRIMA_MODE_TERMS = ['prima', 'primo', 'precedente']
 
-IT_STOP_WORDS = nltk.corpus.stopwords.words('italian') + ['dell', 'indica', 'vera', 'l\'affermazione', 'i', 'la',
-                                                          'queste', 'questo', 'questi', 'in', 'quale', 'quali', 'l',
-                                                          '’', '\'', '\"', '``', '\'', '`', 'fra', 'l\'', ' d ', 'd\'']
+IT_STOP_WORDS = set(nltk.corpus.stopwords.words('italian')).union(
+    {'dell', 'indica', 'vera', 'l\'affermazione', 'i', 'la', 'queste', 'questo', 'questi', 'in', 'quale', 'quali', 'l',
+     '’', '\'', '\"', '``', '\'', '`', 'fra', 'l\'', ' d ', 'd\'', 'quest', 'qual', 'e'}).difference({'piu'})
 
 INSTAGRAM_MODE_TERMS = ['instagram', 'ig']
 
@@ -41,3 +41,12 @@ HEADERS = {
     'Connection': 'keep-alive',
     'Upgrade-Insecure-Requests': '1'
 }
+
+TITLE = '''
+    __    _            ____        _       ____        __     ____   ___
+   / /   (_)   _____  / __ \__  __(_)___  / __ )____  / /_   / __ \ <  /
+  / /   / / | / / _ \/ / / / / / / /_  / / __  / __ \/ __/  / / / / / / 
+ / /___/ /| |/ /  __/ /_/ / /_/ / / / /_/ /_/ / /_/ / /_   / /_/ / / /  
+/_____/_/ |___/\___/\___\_\__,_/_/ /___/_____/\____/\__/   \____(_)_/   
+                                                                        
+'''

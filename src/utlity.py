@@ -34,3 +34,25 @@ def files(path: str):
 def ner_extractor(text: str):
     doc = nlp(text)
     return [(ent.text, ent.label_) for ent in doc.ents]
+
+
+# import wikipedia
+# wikipedia.set_lang("it")
+#
+# word = "orso polare"
+#
+# from nltk.corpus import wordnet as wn
+# cane_lemmas = wn.lemmas("orso polare", lang="ita")
+# if len(cane_lemmas) > 0:
+# hypernyms = cane_lemmas[0].synset().hypernyms() if len(cane_lemmas) > 0 else None
+# to_search = [word]
+#
+# syn = hypernyms[0].lemmas(lang="ita")
+# for i in syn:
+#     n = i.name()
+#     print(n)
+#     res = wikipedia.search(n)
+#     to_search.append(res[0])
+#     print(to_search)
+#     for i in to_search:
+#         print(i, wikipedia.page(i).content.count(' denti '))

@@ -5,7 +5,7 @@ import time
 from multiprocessing.pool import ThreadPool
 from shutil import move
 
-from src.costants import BASE_SCREENSHOT_FOLDER, INPUT_SENTENCE
+from src.costants import BASE_SCREENSHOT_FOLDER, INPUT_SENTENCE, TITLE
 from src.image_to_text import img_to_text
 from src.instance import Instance
 from src.switch import Switch
@@ -58,6 +58,7 @@ if __name__ == '__main__':
 
     try:
         if args.live:
+            print(TITLE)
             while True:
                 key = input(INPUT_SENTENCE)
                 if not key:
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         elif args.test:
             for index, file in enumerate(files('testing')):
                 if file.split('.')[1] == 'jpg' or file.split('.')[1] == 'png':
-                    do_question(pool, file, debug=True)
+                    do_question(pool, file, debug=False)
                     key = input()
                     if key == 'y':
                         move(file, 'screenshot/' + file.split('/')[1])

@@ -66,6 +66,8 @@ class Instance:
         if solver == SolverType.PRIMA and not 'dopo' in question_lower:
             self.is_negative = True
 
+        print(solver)
+
         self.solver = solver
 
     def to_lower(self, f: str):

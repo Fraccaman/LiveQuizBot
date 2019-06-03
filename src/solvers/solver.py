@@ -50,7 +50,7 @@ class Solver(ABC):
             to_clean = to_clean.translate(str.maketrans('', '', string.punctuation))
             self.copy.__dict__[f] = unidecode(to_clean).strip()
         else:
-            to_clean = to_clean.lower()
+            to_clean = unidecode(to_clean.lower())
             is_mandatory = re.search('"(.*)"', to_clean).group(1) if to_clean.count('\"') == 2 else ''
             word_tokenized_list = nltk.tokenize.word_tokenize(to_clean)
             word_tokenized_no_punct = [x.lower() for x in word_tokenized_list if x not in string.punctuation]
@@ -58,19 +58,18 @@ class Solver(ABC):
                                              x not in set(IT_STOP_WORDS)]
             word_tokenized_no_punct_no_sw_no_apostrophe = [x.split("'") for x in word_tokenized_no_punct_no_sw]
             word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y
-                                                           in
-                                                           x]
-
+                                                           in x]
+            last = [x for x in word_tokenized_no_punct_no_sw_no_apostrophe if
+                                             x not in set(IT_STOP_WORDS)]
             if f != 'question':
                 self.copy.__dict__[f] = ' '.join(
-                    unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).split())
+                    unidecode(' '.join(last)).split())
             else:
                 if is_mandatory != '':
-                    q = ' '.join(word_tokenized_no_punct_no_sw_no_apostrophe).replace(is_mandatory,
-                                                                                      '"{}"'.format(is_mandatory))
+                    q = ' '.join(last).replace(is_mandatory,'"{}"'.format(is_mandatory))
                     self.copy.__dict__[f] = unidecode(q).strip()
                 else:
-                    self.copy.__dict__[f] = unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).strip()
+                    self.copy.__dict__[f] = unidecode(' '.join(last)).strip()
 
         if f == self.fields[1]:
             self.copy.indexes[self.copy.__dict__[f]] = 0
@@ -95,7 +94,7 @@ class Solver(ABC):
 
     def craft_queries(self):
         return [
-            DOMAIN + self.copy.question,
+            DOMAIN + quote(self.copy.question),
             DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.first_answer)),
             DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.second_answer)),
             DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.third_answer))
@@ -244,5 +243,6 @@ class Solver(ABC):
         self._init(instance)
         self.clean()
         queries = self.craft_queries()
+        print(queries)
         self.clean_for_points()
         return self.count_points(queries)
