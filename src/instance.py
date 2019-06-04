@@ -15,6 +15,7 @@ class SolverType(Enum):
     SINGLE_NER = 50
     PRIMA = 60
     INTRUSO = 70
+    ADATTAMENTO = 80
     DEFAULT = 0
 
 
@@ -36,7 +37,7 @@ class Instance:
 
     def __post_init__(self):
         question_lower = self.to_lower('question')
-        self.is_negative = 'NON' in self.question
+        self.is_negative = 'NON' in self.question or ' falsa ' in self.question
 
         self.ner_question = ner_extractor(self.question)
 
@@ -65,6 +66,7 @@ class Instance:
 
         solver = SolverType.PRIMA if not 'chi' in question_lower and any(
             term in question_lower for term in PRIMA_MODE_TERMS) else solver
+        solver = SolverType.ADATTAMENTO if 'adattament' in question_lower else solver
 
         if solver == SolverType.PRIMA and not 'dopo' in question_lower:
             self.is_negative = True

@@ -3,6 +3,7 @@ from multiprocessing.pool import ThreadPool
 from typing import List
 
 from src.instance import Instance, SolverType
+from src.solvers.adattamento import Adattamento
 from src.solvers.between import Between
 from src.solvers.coord import Coord
 from src.solvers.default import Default
@@ -20,6 +21,7 @@ class Switch:
 
     def __post_init__(self):
         self.solvers = [
+            Adattamento(self.pool, SolverType.ADATTAMENTO),
             Intruso(self.pool, SolverType.INTRUSO),
             Prima(self.pool, SolverType.PRIMA),
             SingleNer(self.pool, SolverType.SINGLE_NER),

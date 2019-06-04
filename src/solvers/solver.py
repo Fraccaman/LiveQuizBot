@@ -23,7 +23,6 @@ from src.parallel_process import parallel_execution
 from src.utlity import timeit
 
 
-
 @dataclass
 class Solver(ABC):
     pool: ThreadPool
@@ -66,13 +65,13 @@ class Solver(ABC):
             word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y
                                                            in x]
             last = [x for x in word_tokenized_no_punct_no_sw_no_apostrophe if
-                                             x not in set(IT_STOP_WORDS)]
+                    x not in set(IT_STOP_WORDS)]
             if f != 'question':
                 self.copy.__dict__[f] = ' '.join(
                     unidecode(' '.join(last)).split())
             else:
                 if is_mandatory != '':
-                    q = ' '.join(last).replace(is_mandatory,'"{}"'.format(is_mandatory))
+                    q = ' '.join(last).replace(is_mandatory, '"{}"'.format(is_mandatory))
                     self.copy.__dict__[f] = unidecode(q).strip()
                 else:
                     self.copy.__dict__[f] = unidecode(' '.join(last)).strip()
@@ -91,7 +90,7 @@ class Solver(ABC):
             if any(word in q for word in COMMA_REMOVE) and q[0] in COMMA_REMOVE:
                 self.copy.question += q
         if not self.copy.question or self.original.to_lower('question').count(
-            '\"') > 1: self.copy.question = self.original.to_lower('question')
+                '\"') > 1: self.copy.question = self.original.to_lower('question')
         parallel_execution(self.pool, self.clean_impl, self.fields)
 
     def _init(self, instance: Instance):
@@ -135,6 +134,7 @@ class Solver(ABC):
     @staticmethod
     def remove_accent_punctuation(s):
         s = unidecode(s)
+        s.replace("‘", ' ').replace("’", ' ').replace("'", ' ')
         s.translate(str.maketrans('', '', string.punctuation))
         return s
 

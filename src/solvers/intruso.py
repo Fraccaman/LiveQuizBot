@@ -1,14 +1,10 @@
 import string
 from dataclasses import dataclass
-from typing import List, Dict
-from urllib.parse import quote
 
 import nltk
-from bs4 import BeautifulSoup
 from unidecode import unidecode
-from wikipedia import wikipedia
 
-from src.costants import DOMAIN, Colors, IT_STOP_WORDS
+from src.costants import IT_STOP_WORDS
 from src.parallel_process import parallel_execution
 from src.solvers.solver import Solver
 from src.utlity import timeit
@@ -27,16 +23,8 @@ class Intruso(Solver):
             self.original.third_answer
         ]
 
-    def get_result_number(self, html):
-        soup = BeautifulSoup(html, 'lxml')
-        try:
-            results_text = soup.find('div', {'id': 'resultStats'}).text
-        except Exception as _:
-            return 0
-        num = results_text.split(' ')[1].replace('’', '').replace(',', '')
-        return int(num) if num.isdigit() else 0
-
-    def clean_summary(self, text):
+    @staticmethod
+    def clean_summary(text):
         to_clean = unidecode(text.lower())
         word_tokenized_list = nltk.tokenize.word_tokenize(to_clean)
         word_tokenized_no_punct = [x.lower() for x in word_tokenized_list if x not in string.punctuation]
