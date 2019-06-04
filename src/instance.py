@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Dict
 
-from src.costants import BETWEEN_MODE_TERMS, COORD_MODE_TERMS, INSTAGRAM_MODE_TERMS
-from src.utlity import ner_extractor, nlp
+from src.costants import BETWEEN_MODE_TERMS, COORD_MODE_TERMS, INSTAGRAM_MODE_TERMS, PRIMA_MODE_TERMS
+from src.utlity import ner_extractor
 
 
 class SolverType(Enum):
@@ -13,6 +13,9 @@ class SolverType(Enum):
     COORD = 30
     INSTAGRAM = 40
     SINGLE_NER = 50
+    PRIMA = 60
+    INTRUSO = 70
+    ADATTAMENTO = 80
     DEFAULT = 0
 
 
@@ -34,7 +37,7 @@ class Instance:
 
     def __post_init__(self):
         question_lower = self.to_lower('question')
-        self.is_negative = 'NON' in self.question
+        self.is_negative = 'NON' in self.question or ' falsa ' in self.question
 
         self.ner_question = ner_extractor(self.question)
 
@@ -57,14 +60,16 @@ class Instance:
             term in question_lower.translate(str.maketrans('', '', string.punctuation)).split(' ') for term in
             INSTAGRAM_MODE_TERMS) else solver
         solver = SolverType.SINGLE_NER if question_lower.count("\"") == 2 and len(self.ner_question) == 1 and \
-                                          self.ner_question[0][0].lower() not in question_lower.split('"')[
-                                              1] and self.ner_question[0][1]  != 'MISC' else solver
+                                          self.ner_question[0][0].lower() not in question_lower.split('"')[1] \
+                                          and self.ner_question[0][1] != 'MISC' else solver
+        solver = SolverType.INTRUSO if 'intruso' in question_lower else solver
 
-        # print(self.ner_first_answer, self.is_first_complete_ner)
-        # print(self.ner_second_answer, self.is_second_complete_ner)
-        # print(self.ner_third_answer, self.is_third_complete_ner)
+        solver = SolverType.PRIMA if not 'chi' in question_lower and any(
+            term in question_lower for term in PRIMA_MODE_TERMS) else solver
+        solver = SolverType.ADATTAMENTO if 'adattament' in question_lower else solver
 
-        # print(solver)
+        if solver == SolverType.PRIMA and not 'dopo' in question_lower:
+            self.is_negative = True
 
         self.solver = solver
 

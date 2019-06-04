@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, List
+from urllib.parse import quote
 
 from src.costants import DOMAIN
 from src.instance import Instance
@@ -13,10 +14,10 @@ class Between(Solver):
         return self.type == instance.solver
 
     def craft_queries(self):
-        return [DOMAIN + self.copy.question,
-                DOMAIN + self.copy.question + ' AND ({} OR {} OR {})'.format(self.copy.first_answer,
-                                                                             self.copy.second_answer,
-                                                                             self.copy.third_answer)
+        return [DOMAIN + quote(self.copy.question),
+                DOMAIN + quote(self.copy.question + ' AND ({} OR {} OR {})'.format(self.copy.first_answer,
+                                                                                   self.copy.second_answer,
+                                                                                   self.copy.third_answer))
                 ]
 
     def select_points(self, points: List[Dict[str, int]]):

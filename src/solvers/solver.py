@@ -6,16 +6,21 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict
+from urllib.parse import quote
 
 import nltk
-from bs4 import BeautifulSoup
+import requests
+from wikipedia import wikipedia
+
+requests.packages.urllib3.disable_warnings()
+from bs4 import BeautifulSoup, SoupStrainer
 from num2words import num2words
 from unidecode import unidecode
 
 from src.costants import IT_STOP_WORDS, DOMAIN, HEADERS, Colors, COMMA_REMOVE
 from src.instance import Instance, SolverType
 from src.parallel_process import parallel_execution
-from src.requester import req
+from src.utlity import timeit
 
 
 @dataclass
@@ -26,6 +31,12 @@ class Solver(ABC):
     copy: Instance = field(init=False)
     fields: List = field(default_factory=lambda: ['question', 'first_answer', 'second_answer', 'third_answer'])
     ita_stemmer = nltk.stem.snowball.ItalianStemmer()
+    req = requests.Session()
+    req.verify = False
+    wiki = wikipedia
+
+    def __post_init__(self):
+        self.wiki.set_lang('it')
 
     @abstractmethod
     def is_valid_type(self, instance: Instance):
@@ -34,34 +45,36 @@ class Solver(ABC):
     def clean_impl(self, f: str):
         to_clean = self.copy.__dict__[f]
         if len(to_clean.split(' ')) == 1:
-            to_clean = to_clean.lower().replace('ii ', '')
+            to_clean = to_clean.lower()
             to_clean = to_clean.translate(str.maketrans('', '', string.punctuation))
             self.copy.__dict__[f] = unidecode(to_clean).strip()
         elif (f == 'first_answer' and self.copy.is_first_complete_ner) or (
                 f == 'second_answer' and self.copy.is_second_complete_ner) or (
                 f == 'third_answer' and self.copy.is_third_complete_ner):
-            to_clean = to_clean.lower().replace('ii ', '')
+            to_clean = to_clean.lower()
             to_clean = to_clean.translate(str.maketrans('', '', string.punctuation))
             self.copy.__dict__[f] = unidecode(to_clean).strip()
         else:
-            to_clean = to_clean.lower().replace('ii', 'il')
+            to_clean = unidecode(to_clean.lower())
             is_mandatory = re.search('"(.*)"', to_clean).group(1) if to_clean.count('\"') == 2 else ''
             word_tokenized_list = nltk.tokenize.word_tokenize(to_clean)
             word_tokenized_no_punct = [x.lower() for x in word_tokenized_list if x not in string.punctuation]
             word_tokenized_no_punct_no_sw = [x for x in word_tokenized_no_punct if
                                              x not in set(IT_STOP_WORDS)]
             word_tokenized_no_punct_no_sw_no_apostrophe = [x.split("'") for x in word_tokenized_no_punct_no_sw]
-            word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y in
-                                                           x]
-
+            word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y
+                                                           in x]
+            last = [x for x in word_tokenized_no_punct_no_sw_no_apostrophe if
+                    x not in set(IT_STOP_WORDS)]
             if f != 'question':
-                self.copy.__dict__[f] = ' '.join(unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).split())
+                self.copy.__dict__[f] = ' '.join(
+                    unidecode(' '.join(last)).split())
             else:
                 if is_mandatory != '':
-                    q = ' '.join(word_tokenized_no_punct_no_sw_no_apostrophe).replace(is_mandatory, '"{}"'.format(is_mandatory))
+                    q = ' '.join(last).replace(is_mandatory, '"{}"'.format(is_mandatory))
                     self.copy.__dict__[f] = unidecode(q).strip()
                 else:
-                    self.copy.__dict__[f] = unidecode(' '.join(word_tokenized_no_punct_no_sw_no_apostrophe)).strip()
+                    self.copy.__dict__[f] = unidecode(' '.join(last)).strip()
 
         if f == self.fields[1]:
             self.copy.indexes[self.copy.__dict__[f]] = 0
@@ -76,7 +89,8 @@ class Solver(ABC):
         for q in question:
             if any(word in q for word in COMMA_REMOVE) and q[0] in COMMA_REMOVE:
                 self.copy.question += q
-        if not self.copy.question or self.original.to_lower('question').count('\"') > 1: self.copy.question = self.original.to_lower('question')
+        if not self.copy.question or self.original.to_lower('question').count(
+                '\"') > 1: self.copy.question = self.original.to_lower('question')
         parallel_execution(self.pool, self.clean_impl, self.fields)
 
     def _init(self, instance: Instance):
@@ -85,22 +99,25 @@ class Solver(ABC):
 
     def craft_queries(self):
         return [
-            DOMAIN + self.copy.question,
-            DOMAIN + '{} AND {}'.format(self.copy.question, self.copy.first_answer),
-            DOMAIN + '{} AND {}'.format(self.copy.question, self.copy.second_answer),
-            DOMAIN + '{} AND {}'.format(self.copy.question, self.copy.third_answer)
+            DOMAIN + quote(self.copy.question),
+            DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.first_answer)),
+            DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.second_answer)),
+            DOMAIN + quote('{} AND {}'.format(self.copy.question, self.copy.third_answer))
         ]
 
+    @timeit
     def get_page(self, url: str):
-        return req().get(url, headers=HEADERS).text
+        return self.req.get(url, headers=HEADERS).text
 
     @staticmethod
     def find_occurences(to_search: str, to_find: str):
         return re.finditer(r'\b%s\b' % re.escape(to_find), to_search)
 
+    @timeit
     def get_points_from_texts(self, html: str):
-        soup = BeautifulSoup(html, features="html.parser")
-        all_links = soup.find_all('div', {'class': 'g'})
+        strainer = SoupStrainer('div', {'class': 'srg', })
+        soup = BeautifulSoup(html, 'lxml', parse_only=strainer)
+        all_links = soup.find_all('div', {'class': 'g', })
 
         points = {
             self.copy.to_lower('first_answer'): 0,
@@ -108,9 +125,8 @@ class Solver(ABC):
             self.copy.to_lower('third_answer'): 0
         }
 
-        # TODO: better parallelize
         args = [[link, deepcopy(points)] for link in all_links]
-        res = ThreadPool(6).map(self.get_points_link, args)
+        res = ThreadPool(8).map(self.get_points_link, args)
         res = ({k: sum([x[k] for x in res if k in x]) for i in res for k, v in i.items()})
 
         return res
@@ -118,14 +134,16 @@ class Solver(ABC):
     @staticmethod
     def remove_accent_punctuation(s):
         s = unidecode(s)
+        s.replace("‘", ' ').replace("’", ' ').replace("'", ' ')
         s.translate(str.maketrans('', '', string.punctuation))
         return s
 
     def get_points_link(self, data: List):
         try:
             title = self.remove_accent_punctuation(data[0].find('div', {'class': 'r'}).find('h3').text.lower())
-            description = self.remove_accent_punctuation(data[0].find('div', {'class': 's'}).find('span', {'class': 'st'}).text.lower())
-        except Exception as e:
+            description = self.remove_accent_punctuation(
+                data[0].find('div', {'class': 's'}).find('span', {'class': 'st'}).text.lower())
+        except Exception as _:
             return data[1]
 
         for index, answer in enumerate(data[1].keys()):
@@ -159,7 +177,8 @@ class Solver(ABC):
 
     @staticmethod
     def _print_score(n, res, index, win=False):
-        print('{}{}: {}{} - score: {}'.format(Colors.BOLD if not win else Colors.BOLD + Colors.RED, n, res[index][0].upper(), Colors.END, res[index][1]))
+        print('{}{}: {}{} - score: {}'.format(Colors.BOLD if not win else Colors.BOLD + Colors.RED, n,
+                                              res[index][0].upper(), Colors.END, res[index][1]))
 
     def print_results(self, point: Dict[str, int]):
         scores = sorted(point.values())

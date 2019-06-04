@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Dict
+from urllib.parse import quote
 
 from src.costants import DOMAIN
 from src.solvers.solver import Solver
@@ -13,9 +14,9 @@ class Terzetto(Solver):
 
     def craft_queries(self):
         return [
-            DOMAIN + self.copy.question.replace('completa terzetto ', '') + ' AND ' + self.copy.first_answer,
-            DOMAIN + self.copy.question.replace('completa terzetto ', '') + ' AND ' + self.copy.second_answer,
-            DOMAIN + self.copy.question.replace('completa terzetto ', '') + ' AND ' + self.copy.third_answer
+            DOMAIN + quote(self.copy.question.replace('completa terzetto ', '') + ' AND ' + self.copy.first_answer),
+            DOMAIN + quote(self.copy.question.replace('completa terzetto ', '') + ' AND ' + self.copy.second_answer),
+            DOMAIN + quote(self.copy.question.replace('completa terzetto ', '') + ' AND ' + self.copy.third_answer)
         ]
 
     def select_points(self, points: List[Dict[str, int]]):
