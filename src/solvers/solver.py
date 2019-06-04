@@ -10,6 +10,7 @@ from urllib.parse import quote
 
 import nltk
 import requests
+from wikipedia import wikipedia
 
 requests.packages.urllib3.disable_warnings()
 from bs4 import BeautifulSoup, SoupStrainer
@@ -22,6 +23,7 @@ from src.parallel_process import parallel_execution
 from src.utlity import timeit
 
 
+
 @dataclass
 class Solver(ABC):
     pool: ThreadPool
@@ -32,6 +34,10 @@ class Solver(ABC):
     ita_stemmer = nltk.stem.snowball.ItalianStemmer()
     req = requests.Session()
     req.verify = False
+    wiki = wikipedia
+
+    def __post_init__(self):
+        self.wiki.set_lang('it')
 
     @abstractmethod
     def is_valid_type(self, instance: Instance):
@@ -120,7 +126,6 @@ class Solver(ABC):
             self.copy.to_lower('third_answer'): 0
         }
 
-        # TODO: better parallelize
         args = [[link, deepcopy(points)] for link in all_links]
         res = ThreadPool(8).map(self.get_points_link, args)
         res = ({k: sum([x[k] for x in res if k in x]) for i in res for k, v in i.items()})
@@ -243,6 +248,6 @@ class Solver(ABC):
         self._init(instance)
         self.clean()
         queries = self.craft_queries()
-        print(queries)
+        # print(queries)
         self.clean_for_points()
         return self.count_points(queries)
