@@ -248,6 +248,5 @@ class Solver(ABC):
         self._init(instance)
         self.clean()
         queries = self.craft_queries()
-        # print(queries)
         self.clean_for_points()
         return self.count_points(queries)
