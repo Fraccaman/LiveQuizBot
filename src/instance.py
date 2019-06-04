@@ -14,6 +14,7 @@ class SolverType(Enum):
     INSTAGRAM = 40
     SINGLE_NER = 50
     PRIMA = 60
+    INTRUSO = 70
     DEFAULT = 0
 
 
@@ -60,13 +61,13 @@ class Instance:
         solver = SolverType.SINGLE_NER if question_lower.count("\"") == 2 and len(self.ner_question) == 1 and \
                                           self.ner_question[0][0].lower() not in question_lower.split('"')[1] \
                                           and self.ner_question[0][1] != 'MISC' else solver
+        solver = SolverType.INTRUSO if 'intruso' in question_lower else solver
+
         solver = SolverType.PRIMA if not 'chi' in question_lower and any(
             term in question_lower for term in PRIMA_MODE_TERMS) else solver
 
         if solver == SolverType.PRIMA and not 'dopo' in question_lower:
             self.is_negative = True
-
-        print(solver)
 
         self.solver = solver
 

@@ -1,7 +1,13 @@
 import os
+import re
+import string
 import time
 
+import nltk
 import spacy
+from unidecode import unidecode
+
+from src.costants import IT_STOP_WORDS
 
 nlp = spacy.load("it_core_news_sm")
 
@@ -36,8 +42,40 @@ def ner_extractor(text: str):
     return [(ent.text, ent.label_) for ent in doc.ents]
 
 
+def clean(to_clean):
+    to_clean = unidecode(to_clean.lower())
+    # is_mandatory = re.search('"(.*)"', to_clean).group(1) if to_clean.count('\"') == 2 else ''
+    word_tokenized_list = nltk.tokenize.word_tokenize(to_clean)
+    word_tokenized_no_punct = [x.lower() for x in word_tokenized_list if x not in string.punctuation]
+    word_tokenized_no_punct_no_sw = [x for x in word_tokenized_no_punct if
+                                     x not in set(IT_STOP_WORDS)]
+    word_tokenized_no_punct_no_sw_no_apostrophe = [x.split("'") for x in word_tokenized_no_punct_no_sw]
+    word_tokenized_no_punct_no_sw_no_apostrophe = [y for x in word_tokenized_no_punct_no_sw_no_apostrophe for y
+                                                   in x]
+    last = [x for x in word_tokenized_no_punct_no_sw_no_apostrophe if
+            x not in set(IT_STOP_WORDS)]
+    return last
+
+
 # import wikipedia
 # wikipedia.set_lang("it")
+#
+# pages = wikipedia.search('yves klein')
+# one = clean(wikipedia.page(pages[0]).summary)
+#
+# pages = wikipedia.search('caravaggio')
+# two = clean(wikipedia.page(pages[0]).summary)
+#
+# pages = wikipedia.search('paul cezanne')
+# three = clean(wikipedia.page(pages[0]).summary)
+#
+# print(set(one).intersection(set(two)), '\n', set(one).symmetric_difference(set(two)), '\n', len(set(one).intersection(set(two))) / len(set(one).symmetric_difference(set(two))))
+# print(set(one).intersection(set(three)), '\n', set(one).symmetric_difference(set(three)), '\n', len(set(one).intersection(set(three))) / len(set(one).symmetric_difference(set(three))))
+# print(set(two).intersection(set(three)), '\n', set(two).symmetric_difference(set(three)), '\n', len(set(two).intersection(set(three))) / len(set(two).symmetric_difference(set(three))))
+
+
+
+
 #
 # word = "orso polare"
 #

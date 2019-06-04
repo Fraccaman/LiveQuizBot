@@ -21,7 +21,7 @@ class Between(Solver):
                 ]
 
     def select_points(self, points: List[Dict[str, int]]):
-
+        print(points[0])
         if list(points[0].values()).count(0) == 2 and not self.copy.is_negative and sum(points[0].values()) > 1:
             total_points = points[0]
         elif list(points[1].values()).count(0) == 2 and not self.copy.is_negative and sum(points[1].values()) > 1:
