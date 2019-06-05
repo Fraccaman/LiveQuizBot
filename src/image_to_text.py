@@ -14,7 +14,7 @@ QUESTION_BOUNDARIES = lambda w, h: (35, 450, w - 35, h - 1190)
 FIRST_ANSWER_BOUNDARIES = lambda w, h, space: (35, 690 + space, w - 120, h - 1050 + space)
 SECOND_ANSWER_BOUNDARIES = lambda w, h, space: (35, 910 + space, w - 120, h - 830 + space)
 THIRD_ANSWER_BOUNDARIES = lambda w, h, space: (35, 1130 + space, w - 120, h - 610 + space)
-SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.2 * w, h - 30)
+SMALL_ANSWER_BOUNDARIES = lambda w, h: (60, 20, 0.15 * w, h - 30)
 
 
 @timeit
@@ -48,12 +48,13 @@ def answer_to_text(data: List[Any]) -> str:
     if answer_text == "":
         w, h = answer_image.size
         answer_image = answer_image.crop(SMALL_ANSWER_BOUNDARIES(w, h))
-        if debug: answer_image.show()
+        answer_image.show()
         answer_file_name = " ".join(str(x) for x in boundaries) + '.png'
         answer_image.save(answer_file_name)
-        res = subprocess.run(['tesseract', answer_file_name, 'stdout', 'quiet'], stdout=subprocess.PIPE)
+        res = subprocess.run(['tesseract', answer_file_name, 'stdout', '--psm', '6', 'quiet'], stdout=subprocess.PIPE)
         answer_text = res.stdout.decode('utf-8').replace('\n', ' ').replace('ii ', 'il ').replace('lIl', 'Il ').replace(
             'll ', 'Il ').replace('|', 'I').strip()
+        print(answer_text)
     return answer_text
 
 
